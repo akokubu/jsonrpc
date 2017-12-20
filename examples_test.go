@@ -23,20 +23,20 @@ func Example() {
 
 	// change result and send back using rpc
 	person.Age = 35
-	rpcClient.Call("setPersonByID", 12345, person)
+	rpcClient.Call("setPersonByID", []interface{}{12345, person})
 }
 
 func ExampleRPCClient_Call() {
 	rpcClient := NewRPCClient("http://my-rpc-service")
 
 	// result processing omitted, see: RPCResponse methods
-	rpcClient.Call("getTimestamp")
+	rpcClient.Call("getTimestamp", []interface{}{})
 
 	rpcClient.Call("getPerson", 1234)
 
-	rpcClient.Call("addNumbers", 5, 2, 3)
+	rpcClient.Call("addNumbers", []int{5, 2, 3})
 
-	rpcClient.Call("strangeFunction", 1, true, "alex", 3.4)
+	rpcClient.Call("strangeFunction", []interface{}{1, true, "alex", 3.4})
 
 	type Person struct {
 		Name    string `json:"name"`
@@ -50,7 +50,7 @@ func ExampleRPCClient_Call() {
 		Country: "germany",
 	}
 
-	rpcClient.Call("setPersonByID", 123, person)
+	rpcClient.Call("setPersonByID", []interface{}{123, person})
 }
 
 func ExampleRPCClient_CallNamed() {
@@ -59,7 +59,7 @@ func ExampleRPCClient_CallNamed() {
 	// result processing omitted, see: RPCResponse methods
 	rpcClient.CallNamed("createPerson", map[string]interface{}{
 		"name":      "Bartholomew Allen",
-		"nicknames": []string{"Barry", "Flash", },
+		"nicknames": []string{"Barry", "Flash"},
 		"male":      true,
 		"age":       28,
 		"address":   map[string]interface{}{"street": "Main Street", "city": "Central City"},
@@ -69,7 +69,7 @@ func ExampleRPCClient_CallNamed() {
 func ExampleRPCResponse() {
 	rpcClient := NewRPCClient("http://my-rpc-service")
 
-	response, _ := rpcClient.Call("addNumbers", 1, 2, 3)
+	response, _ := rpcClient.Call("addNumbers", []int{1, 2, 3})
 	sum, _ := response.GetInt()
 	fmt.Println(sum)
 
@@ -77,7 +77,7 @@ func ExampleRPCResponse() {
 	valid, _ := response.GetBool()
 	fmt.Println(valid)
 
-	response, _ = rpcClient.Call("getJoke")
+	response, _ = rpcClient.Call("getJoke", []interface{}{})
 	joke, _ := response.GetString()
 	fmt.Println(joke)
 

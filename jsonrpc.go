@@ -58,6 +58,10 @@ type RPCError struct {
 	Data    interface{} `json:"data"`
 }
 
+func (err RPCError) Error() string {
+	return fmt.Sprintf("Error %d (%s)", err.Code, err.Message)
+}
+
 // RPCClient sends jsonrpc requests over http to the provided rpc backend.
 // RPCClient is created using the factory function NewRPCClient().
 type RPCClient struct {
@@ -129,13 +133,9 @@ func (client *RPCClient) NewRPCNotificationObject(method string, params ...inter
 // and contains information about the error.
 //
 // If the request was successful the Error field is nil and the Result field of the RPCRespnse struct contains the rpc result.
-func (client *RPCClient) Call(method string, params ...interface{}) (*RPCResponse, error) {
+func (client *RPCClient) Call(method string, params interface{}) (*RPCResponse, error) {
 	// Ensure that params are nil and will be omitted from JSON if not specified.
-	var p interface{}
-	if len(params) != 0 {
-		p = params
-	}
-	httpRequest, err := client.newRequest(false, method, p)
+	httpRequest, err := client.newRequest(false, method, params)
 	if err != nil {
 		return nil, err
 	}
