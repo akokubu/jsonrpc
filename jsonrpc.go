@@ -80,7 +80,7 @@ func NewRPCClient(endpoint string) *RPCClient {
 	return &RPCClient{
 		endpoint: endpoint,
 		httpClient: &http.Client{
-			Timeout: 60 * time.Second,
+			Timeout: 300 * time.Second,
 		},
 		autoIncrementID: true,
 		nextID:          0,
