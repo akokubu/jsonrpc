@@ -88,6 +88,21 @@ func NewRPCClient(endpoint string) *RPCClient {
 	}
 }
 
+// NewRPCClientWithTimeout returns a new RPCClient instance with default configuration except Timeout setting (no custom headers, autoincrement ids).
+// Endpoint is the rpc-service url to which the rpc requests are sent.
+// Timeout is the time duration until the RPC request is cancelled.
+func NewRPCClientWithTimeout(endpoint string, timeout time.Duration) *RPCClient {
+	return &RPCClient{
+		endpoint: endpoint,
+		httpClient: &http.Client{
+			Timeout: timeout,
+		},
+		autoIncrementID: true,
+		nextID:          0,
+		customHeaders:   make(map[string]string),
+	}
+}
+
 // NewRPCRequestObject creates and returns a raw RPCRequest structure.
 // It is mainly used when building batch requests. For single requests use RPCClient.Call().
 // RPCRequest struct can also be created directly, but this function sets the ID and the jsonrpc field to the correct values.
