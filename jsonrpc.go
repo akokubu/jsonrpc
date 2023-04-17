@@ -160,6 +160,16 @@ func (client *RPCClient) Call(method string, params interface{}) (*RPCResponse, 
 	return client.doCall(httpRequest)
 }
 
+func (client *RPCClient) Call2(method, token string, params interface{}) (*RPCResponse, error) {
+	// Ensure that params are nil and will be omitted from JSON if not specified.
+	httpRequest, err := client.newRequest(false, method, params)
+	if err != nil {
+		return nil, err
+	}
+	httpRequest.Header.Add("Authorization", token)
+	return client.doCall(httpRequest)
+}
+
 // CallNamed sends an jsonrpc request over http to the rpc-service url that was provided on client creation.
 // This differs from Call() by sending named, rather than positional, arguments.
 //
@@ -216,6 +226,7 @@ func (client *RPCClient) Notification(method string, params ...interface{}) erro
 
 // Batch sends a jsonrpc batch request to the rpc-service.
 // The parameter is a list of requests the could be one of:
+//
 //	RPCRequest
 //	RPCNotification.
 //
@@ -453,11 +464,12 @@ func (rpcResponse *RPCResponse) GetString() (string, error) {
 //
 // For example if the following json return value is expected: {"name": "alex", age: 33, "country": "Germany"}
 // the struct should look like
-//  type Person struct {
-//    Name string
-//    Age int
-//    Country string
-//  }
+//
+//	type Person struct {
+//	  Name string
+//	  Age int
+//	  Country string
+//	}
 func (rpcResponse *RPCResponse) GetObject(toType interface{}) error {
 	js, err := json.Marshal(rpcResponse.Result)
 	if err != nil {
